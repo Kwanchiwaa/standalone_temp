@@ -1,82 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Air Quality Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            text-align: center;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            color: #ff4081;
-        }
-        .data-box {
-            display: inline-block;
-            padding: 20px;
-            margin: 10px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .label {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        .value {
-            font-size: 2.5rem;
-            color: #333;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            background-color: #ff4081;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
-    <h1>Real-Time Air Quality Dashboard</h1>
-
-    <div class="data-box">
-        <div class="label">Temperature (°C)</div>
-        <div class="value" id="temp">--</div>
-    </div>
-    <div class="data-box">
-        <div class="label">Humidity (%)</div>
-        <div class="value" id="hum">--</div>
-    </div>
-    <div class="data-box">
-        <div class="label">PM2.5 (µg/m³)</div>
-        <div class="value" id="pm25">--</div>
-    </div>
-
-    <br>
-    <button onclick="fetchLatest()">Refresh</button>
+    <h1>Latest Air Quality Data</h1>
+    <div id="data"></div>
 
     <script>
-        function fetchLatest() {
-            fetch('/api/latest')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('temp').innerText = data.temperature + "°C";
-                    document.getElementById('hum').innerText = data.humidity + "%";
-                    document.getElementById('pm25').innerText = data.pm25 + " µg/m³";
-                })
-                .catch(err => {
-                    alert("ไม่สามารถดึงข้อมูลได้");
-                    console.error(err);
-                });
+        async function fetchData() {
+            const response = await fetch('/api/latest');
+            const data = await response.json();
+            document.getElementById('data').innerHTML = `
+                <p>Temperature: ${data.temperature} °C</p>
+                <p>Humidity: ${data.humidity} %</p>
+                <p>PM2.5: ${data.pm25} µg/m³</p>
+            `;
         }
-
-        // โหลดข้อมูลครั้งแรกตอนเปิดหน้า
-        fetchLatest();
+        fetchData();
+        setInterval(fetchData, 5000);
     </script>
 </body>
 </html>
