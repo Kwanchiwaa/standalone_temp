@@ -1,2 +1,2 @@
-flask
-pymongo
+Flask
+psycopg2
