@@ -21,9 +21,6 @@ def upload_data():
 
     return jsonify({"message": "Data uploaded successfully!"})
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 @app.route("/dashboard")
 def dashboard():
     html = '''
@@ -123,3 +120,24 @@ def dashboard():
   </script>
 </body>
 </html>
+    '''
+    return html
+
+# Route สำหรับดึงข้อมูลจาก MongoDB (ใช้สำหรับแสดงใน Dashboard)
+@app.route("/data")
+def get_data():
+    data = []
+    # ดึงข้อมูลจาก MongoDB และเรียงลำดับตามวันที่
+    cursor = collection.find().sort("created_at", -1).limit(30)  # ดึงล่าสุด 30 รายการ
+    for document in cursor:
+        data.append({
+            "timestamp": document["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
+            "temperature": document["temperature"],
+            "humidity": document["humidity"],
+            "pm25": document["pm25"]
+        })
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
