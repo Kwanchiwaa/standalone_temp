@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -12,14 +13,14 @@ collection = db["sensor_data"]
 @app.route('/upload', methods=['POST'])
 def upload_data():
     data = request.get_json()
-
-    # เพิ่ม timestamp เป็น datetime object
     data['created_at'] = datetime.utcnow()
-
-    # บันทึกลง MongoDB
     collection.insert_one(data)
-
     return jsonify({"message": "Data uploaded successfully!"})
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template("dashboard.html")
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
